@@ -1,35 +1,68 @@
 ﻿<template>
-    <div class="container">
-        <h1>🚀 URL Shortener</h1>
-        <p class="subtitle">Rút gọn link của bạn trong 1 nốt nhạc</p>
+    <div class="container py-5" style="max-width: 700px;">
 
-        <div class="input-group">
-            <input v-model="originalUrl"
-                   type="url"
-                   placeholder="Dán link dài vào đây (VD: https://greenwich...)"
-                   @keyup.enter="shortenUrl" />
-            <button @click="shortenUrl" :disabled="isLoading">
-                {{ isLoading ? 'Đang xử lý...' : 'Rút gọn' }}
-            </button>
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-primary">🚀 URL Shortener</h1>
+            <p class="text-muted">Rút gọn link của bạn trong 1 nốt nhạc</p>
         </div>
 
-        <div v-if="shortUrl" class="result-box">
-            <p>🎉 Thành công! Link của bạn đây:</p>
-            <a :href="shortUrl" target="_blank" class="short-link">{{ shortUrl }}</a>
-        </div>
-
-        <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
-
-        <div v-if="history.length > 0" class="history-section">
-            <h3>🕒 Lịch sử của bạn</h3>
-            <div class="history-list">
-                <div v-for="(item, index) in history" :key="index" class="history-item">
-                    <a :href="item.shortUrl" target="_blank" class="history-short">{{ item.shortUrl }}</a>
-                    <span class="history-arrow">⬅️</span>
-                    <span class="history-original" :title="item.originalUrl">{{ item.originalUrl }}</span>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <div class="input-group input-group-lg">
+                    <input v-model="originalUrl"
+                           type="url"
+                           class="form-control"
+                           placeholder="Dán link dài vào đây..."
+                           @keyup.enter="shortenUrl" />
+                    <button class="btn btn-success px-4" @click="shortenUrl" :disabled="isLoading">
+                        <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        {{ isLoading ? 'Đang xử lý...' : 'Rút gọn' }}
+                    </button>
                 </div>
             </div>
-            <button class="clear-btn" @click="clearHistory">Xóa lịch sử</button>
+        </div>
+
+        <div v-if="shortUrl" class="alert alert-success shadow-sm d-flex align-items-center justify-content-between">
+            <div>
+                <h5 class="alert-heading mb-1">🎉 Thành công!</h5>
+                <a :href="shortUrl" target="_blank" class="text-decoration-none fw-bold text-success fs-5">
+                    {{ shortUrl }}
+                </a>
+            </div>
+        </div>
+
+        <div v-if="errorMessage" class="alert alert-danger shadow-sm">
+            {{ errorMessage }}
+        </div>
+
+        <div v-if="history.length > 0" class="mt-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="m-0 text-secondary">🕒 Lịch sử rút gọn</h4>
+                <button class="btn btn-sm btn-outline-danger" @click="clearHistory">Xóa lịch sử</button>
+            </div>
+
+            <div class="table-responsive shadow-sm rounded">
+                <table class="table table-hover table-bordered mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 40%">Link rút gọn</th>
+                            <th scope="col" style="width: 60%">Link gốc</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) in history" :key="index">
+                            <td>
+                                <a :href="item.shortUrl" target="_blank" class="fw-bold text-primary text-decoration-none">
+                                    {{ item.shortUrl }}
+                                </a>
+                            </td>
+                            <td class="text-truncate" style="max-width: 300px;" :title="item.originalUrl">
+                                <span class="text-muted">{{ item.originalUrl }}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </template>
@@ -95,162 +128,3 @@
         localStorage.removeItem('myUrlHistory');
     };
 </script>
-
-<style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f4f7f6;
-        display: flex;
-        justify-content: center;
-        padding-top: 50px;
-        padding-bottom: 50px;
-        margin: 0;
-    }
-
-    .container {
-        background: white;
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        text-align: center;
-        max-width: 650px;
-        width: 100%;
-    }
-
-    h1 {
-        color: #2c3e50;
-        margin-bottom: 5px;
-    }
-
-    .subtitle {
-        color: #7f8c8d;
-        margin-bottom: 30px;
-    }
-
-    .input-group {
-        display: flex;
-        gap: 10px;
-    }
-
-    input {
-        flex: 1;
-        padding: 12px 15px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        font-size: 16px;
-        outline: none;
-    }
-
-        input:focus {
-            border-color: #42b883;
-        }
-
-    button {
-        padding: 12px 25px;
-        background-color: #42b883;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-
-        button:hover:not(:disabled) {
-            background-color: #33a06f;
-        }
-
-        button:disabled {
-            background-color: #a8d5c2;
-            cursor: not-allowed;
-        }
-
-    .result-box {
-        margin-top: 30px;
-        padding: 20px;
-        background-color: #e8f5e9;
-        border: 1px dashed #4caf50;
-        border-radius: 8px;
-    }
-
-    .short-link {
-        font-size: 20px;
-        color: #2e7d32;
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-    .error-text {
-        color: #e74c3c;
-        margin-top: 20px;
-        font-weight: bold;
-    }
-
-    /* CSS MỚI CHO PHẦN LỊCH SỬ */
-    .history-section {
-        margin-top: 40px;
-        text-align: left;
-        border-top: 2px solid #eee;
-        padding-top: 20px;
-    }
-
-        .history-section h3 {
-            color: #34495e;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-    .history-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        max-height: 300px;
-        overflow-y: auto;
-    }
-
-    .history-item {
-        display: flex;
-        align-items: center;
-        background: #f8f9fa;
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-size: 14px;
-    }
-
-    .history-short {
-        color: #2980b9;
-        font-weight: bold;
-        text-decoration: none;
-        white-space: nowrap;
-    }
-
-        .history-short:hover {
-            text-decoration: underline;
-        }
-
-    .history-arrow {
-        margin: 0 15px;
-        font-size: 12px;
-    }
-
-    .history-original {
-        color: #7f8c8d;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 300px; /* Cắt bớt link gốc nếu quá dài */
-    }
-
-    .clear-btn {
-        margin-top: 15px;
-        background-color: #e74c3c;
-        padding: 8px 15px;
-        font-size: 14px;
-        width: 100%;
-    }
-
-        .clear-btn:hover {
-            background-color: #c0392b;
-        }
-</style>
