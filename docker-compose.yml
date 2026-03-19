@@ -1,0 +1,42 @@
+﻿version: '3.8'
+
+services:
+  # 1. Cơ sở dữ liệu SQL Server
+  sql-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Amd@201
+    ports:
+      - "1433:1433"
+
+  # 2. Bộ nhớ đệm Redis
+  redis-cache:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  # 3. Backend API (.NET)
+  backend-api:
+    build: 
+      context: ./UrlShortener.API
+      dockerfile: Dockerfile
+    ports:
+      - "5078:8080" # Ánh xạ cổng ra ngoài
+    environment:
+      # Ghi đè chuỗi kết nối để trỏ vào thằng sql-db và redis-cache ở trên
+      - ConnectionStrings__DefaultConnection=Server=sql-db;Database=UrlShortenerDb;User Id=sa;Password=Amd@201;TrustServerCertificate=True;
+      - ConnectionStrings__Redis=redis-cache:6379
+    depends_on:
+      - sql-db
+      - redis-cache
+
+  # 4. Frontend Web (Vue.js)
+  frontend-web:
+    build: 
+      context: ./url-shortener-web
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80" # Bạn của bạn sẽ truy cập qua cổng này
+    depends_on:
+      - backend-api

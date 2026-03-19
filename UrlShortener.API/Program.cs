@@ -49,4 +49,12 @@ app.UseCors("AllowAll"); // <-- Kích hoạt CORS ở đây
 app.UseAuthorization();
 app.MapControllers();
 
+// --- ĐOẠN CODE TỰ ĐỘNG TẠO DATABASE VÀ BẢNG KHI CHẠY DOCKER ---
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate(); // Tự động chạy lệnh update database
+}
+// --------------------------------------------------------------
+
 app.Run();
