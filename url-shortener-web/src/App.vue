@@ -2,7 +2,7 @@
     <div class="container py-5" style="max-width: 700px;">
 
         <div class="text-center mb-5">
-            <h1 class="display-5 fw-bold text-primary">🚀 URL Shortener</h1>
+            <h1 class="display-5 fw-bold text-primary">URL Shortener</h1>
             <p class="text-muted">Rút gọn link của bạn trong 1 nốt nhạc</p>
         </div>
 
@@ -24,7 +24,7 @@
 
         <div v-if="shortUrl" class="alert alert-success shadow-sm d-flex align-items-center justify-content-between">
             <div>
-                <h5 class="alert-heading mb-1">🎉 Thành công!</h5>
+                <h5 class="alert-heading mb-1">Thành công!</h5>
                 <a :href="shortUrl" target="_blank" class="text-decoration-none fw-bold text-success fs-5">
                     {{ shortUrl }}
                 </a>
@@ -37,7 +37,7 @@
 
         <div v-if="history.length > 0" class="mt-5">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="m-0 text-secondary">🕒 Lịch sử rút gọn</h4>
+                <h4 class="m-0 text-secondary">Lịch sử rút gọn</h4>
                 <button class="btn btn-sm btn-outline-danger" @click="clearHistory">Xóa lịch sử</button>
             </div>
 
@@ -64,6 +64,7 @@
                 </table>
             </div>
         </div>
+
     </div>
 </template>
 
