@@ -1,0 +1,4 @@
+.vs/
+**/bin/
+**/obj/
+url-shortener-web/node_modules/
