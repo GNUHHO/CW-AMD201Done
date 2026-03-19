@@ -1,0 +1,12 @@
+﻿# Bỏ qua các thư mục rác của .NET
+bin/
+obj/
+
+# Bỏ qua các file cấu hình của Visual Studio/VS Code
+.vs/
+.vscode/
+*.user
+
+# Bỏ qua file môi trường Docker ảo
+.dockerignore
+Dockerfile
