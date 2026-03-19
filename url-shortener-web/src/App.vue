@@ -19,16 +19,39 @@
         </div>
 
         <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
+
+        <div v-if="history.length > 0" class="history-section">
+            <h3>🕒 Lịch sử của bạn</h3>
+            <div class="history-list">
+                <div v-for="(item, index) in history" :key="index" class="history-item">
+                    <a :href="item.shortUrl" target="_blank" class="history-short">{{ item.shortUrl }}</a>
+                    <span class="history-arrow">⬅️</span>
+                    <span class="history-original" :title="item.originalUrl">{{ item.originalUrl }}</span>
+                </div>
+            </div>
+            <button class="clear-btn" @click="clearHistory">Xóa lịch sử</button>
+        </div>
     </div>
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
 
     const originalUrl = ref('');
     const shortUrl = ref('');
     const errorMessage = ref('');
     const isLoading = ref(false);
+
+    // Biến lưu trữ danh sách lịch sử
+    const history = ref([]);
+
+    // Khi trang web vừa mở lên, lấy dữ liệu từ LocalStorage ra hiển thị
+    onMounted(() => {
+        const savedHistory = localStorage.getItem('myUrlHistory');
+        if (savedHistory) {
+            history.value = JSON.parse(savedHistory);
+        }
+    });
 
     const shortenUrl = async () => {
         if (!originalUrl.value) return;
@@ -38,7 +61,6 @@
         shortUrl.value = '';
 
         try {
-            // Gọi thẳng vào API .NET của bạn ở port 5078
             const response = await fetch('http://localhost:5078/api/shorten', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -49,11 +71,28 @@
 
             const data = await response.json();
             shortUrl.value = data.shortUrl;
+
+            // --- THÊM VÀO LỊCH SỬ ---
+            // Đẩy link mới lên đầu danh sách
+            history.value.unshift({
+                originalUrl: originalUrl.value,
+                shortUrl: data.shortUrl
+            });
+
+            // Lưu mảng mới vào LocalStorage của trình duyệt
+            localStorage.setItem('myUrlHistory', JSON.stringify(history.value));
+
         } catch (error) {
             errorMessage.value = error.message;
         } finally {
             isLoading.value = false;
         }
+    };
+
+    // Hàm xóa lịch sử
+    const clearHistory = () => {
+        history.value = [];
+        localStorage.removeItem('myUrlHistory');
     };
 </script>
 
@@ -63,7 +102,8 @@
         background-color: #f4f7f6;
         display: flex;
         justify-content: center;
-        padding-top: 100px;
+        padding-top: 50px;
+        padding-bottom: 50px;
         margin: 0;
     }
 
@@ -73,7 +113,7 @@
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         text-align: center;
-        max-width: 600px;
+        max-width: 650px;
         width: 100%;
     }
 
@@ -141,13 +181,76 @@
         text-decoration: none;
     }
 
-        .short-link:hover {
-            text-decoration: underline;
-        }
-
     .error-text {
         color: #e74c3c;
         margin-top: 20px;
         font-weight: bold;
     }
+
+    /* CSS MỚI CHO PHẦN LỊCH SỬ */
+    .history-section {
+        margin-top: 40px;
+        text-align: left;
+        border-top: 2px solid #eee;
+        padding-top: 20px;
+    }
+
+        .history-section h3 {
+            color: #34495e;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+    .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .history-item {
+        display: flex;
+        align-items: center;
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .history-short {
+        color: #2980b9;
+        font-weight: bold;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+        .history-short:hover {
+            text-decoration: underline;
+        }
+
+    .history-arrow {
+        margin: 0 15px;
+        font-size: 12px;
+    }
+
+    .history-original {
+        color: #7f8c8d;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px; /* Cắt bớt link gốc nếu quá dài */
+    }
+
+    .clear-btn {
+        margin-top: 15px;
+        background-color: #e74c3c;
+        padding: 8px 15px;
+        font-size: 14px;
+        width: 100%;
+    }
+
+        .clear-btn:hover {
+            background-color: #c0392b;
+        }
 </style>
