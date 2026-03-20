@@ -19,8 +19,8 @@ services:
   # 3. Backend API (.NET)
   backend-api:
     build: 
-      context: ./UrlShortener.API
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: UrlShortener.API/Dockerfile
     ports:
       - "5078:8080" # Ánh xạ cổng ra ngoài
     environment:
