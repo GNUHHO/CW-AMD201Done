@@ -1,4 +1,4 @@
-\# 🔗 High-Performance URL Shortener
+\# High-Performance URL Shortener
 
 
 
@@ -22,11 +22,11 @@ A modern, full-stack web application designed to convert long, complex URLs into
 
 
 
-\## 🌟 Key Features
+\##  Key Features
 
 
 
-\* \*\*🚀 Blazing Fast Redirects with Redis:\*\* Implements the \*Cache-Aside\* pattern to maximize redirect speed (HTTP 302), reducing database query loads by up to 90%.
+\* \*\* Blazing Fast Redirects with Redis:\*\* Implements the \*Cache-Aside\* pattern to maximize redirect speed (HTTP 302), reducing database query loads by up to 90%.
 
 \* \*\* Smart Cache Invalidation:\*\* The system automatically evicts stale cache data during `PUT` (Update) and `DELETE` operations, guaranteeing absolute Data Consistency.
 
