@@ -79,6 +79,36 @@ namespace UrlShortener.Services
             return null;
         }
 
+        public async Task<bool> UpdateUrlAsync(string shortCode, string newUrl)
+        {
+            var urlItem = await _context.UrlMappings.FirstOrDefaultAsync(u => u.ShortCode == shortCode);
+            if (urlItem == null) return false;
+
+            // 1. Cập nhật vào Database
+            urlItem.OriginalUrl = newUrl;
+            await _context.SaveChangesAsync();
+
+            // 2. [TỐI QUAN TRỌNG] Xóa Cache cũ để lần sau nó tự lấy link mới
+            await _cache.RemoveAsync(shortCode);
+
+            return true;
+        }
+
+        public async Task<bool> DeleteUrlAsync(string shortCode)
+        {
+            var urlItem = await _context.UrlMappings.FirstOrDefaultAsync(u => u.ShortCode == shortCode);
+            if (urlItem == null) return false;
+
+            // 1. Xóa khỏi Database
+            _context.UrlMappings.Remove(urlItem);
+            await _context.SaveChangesAsync();
+
+            // 2. [TỐI QUAN TRỌNG] Xóa luôn khỏi Cache để người dùng không truy cập được nữa
+            await _cache.RemoveAsync(shortCode);
+
+            return true;
+        }
+
         private string GenerateRandomCode(int length)
         {
             var chars = new char[length];

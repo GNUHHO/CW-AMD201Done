@@ -9,5 +9,7 @@ namespace UrlShortener.Services
 
         // Nhận vào mã ngắn và trả về URL gốc để chuyển hướng
         Task<string> GetOriginalUrlAsync(string shortCode);
+        Task<bool> UpdateUrlAsync(string shortCode, string newUrl);
+        Task<bool> DeleteUrlAsync(string shortCode);
     }
 }

@@ -6,7 +6,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=Amd@201
+      - SA_PASSWORD=Greenwich@123
     ports:
       - "1433:1433"
 
@@ -14,7 +14,7 @@ services:
   redis-cache:
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - "6380:6379"
 
   # 3. Backend API (.NET)
   backend-api:
@@ -24,8 +24,9 @@ services:
     ports:
       - "5078:8080" # Ánh xạ cổng ra ngoài
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       # Ghi đè chuỗi kết nối để trỏ vào thằng sql-db và redis-cache ở trên
-      - ConnectionStrings__DefaultConnection=Server=sql-db;Database=UrlShortenerDb;User Id=sa;Password=Amd@201;TrustServerCertificate=True;
+      - ConnectionStrings__DefaultConnection=Server=sql-db;Database=UrlShortenerDb;User Id=sa;Password=Greenwich@123;TrustServerCertificate=True;
       - ConnectionStrings__Redis=redis-cache:6379
     depends_on:
       - sql-db

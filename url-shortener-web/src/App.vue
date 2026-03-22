@@ -3,7 +3,7 @@
 
         <div class="text-center mb-5">
             <h1 class="display-5 fw-bold text-primary">URL Shortener</h1>
-            <p class="text-muted">Rút gọn link của bạn trong 1 nốt nhạc</p>
+            <p class="text-muted">Shorten your link in a snap.</p>
         </div>
 
         <div class="card shadow-sm border-0 mb-4">
@@ -16,7 +16,7 @@
                            @keyup.enter="shortenUrl" />
                     <button class="btn btn-success px-4" @click="shortenUrl" :disabled="isLoading">
                         <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        {{ isLoading ? 'Đang xử lý...' : 'Rút gọn' }}
+                        {{ isLoading ? 'Processing...' : 'Shorten It' }}
                     </button>
                 </div>
             </div>
@@ -24,10 +24,13 @@
 
         <div v-if="shortUrl" class="alert alert-success shadow-sm d-flex align-items-center justify-content-between">
             <div>
-                <h5 class="alert-heading mb-1">Thành công!</h5>
+                <h5 class="alert-heading mb-1">Success!</h5>
                 <a :href="shortUrl" target="_blank" class="text-decoration-none fw-bold text-success fs-5">
                     {{ shortUrl }}
                 </a>
+            </div>
+            <div class="ms-3 p-2 bg-white rounded shadow-sm">
+                <qrcode-vue :value="originalUrl" :size="100" level="H" />
             </div>
         </div>
 
@@ -37,16 +40,16 @@
 
         <div v-if="history.length > 0" class="mt-5">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="m-0 text-secondary">Lịch sử rút gọn</h4>
-                <button class="btn btn-sm btn-outline-danger" @click="clearHistory">Xóa lịch sử</button>
+                <h4 class="m-0 text-secondary">Abbreviated history</h4>
+                <button class="btn btn-sm btn-outline-danger" @click="clearHistory">Delete history</button>
             </div>
 
             <div class="table-responsive shadow-sm rounded">
                 <table class="table table-hover table-bordered mb-0 align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" style="width: 40%">Link rút gọn</th>
-                            <th scope="col" style="width: 60%">Link gốc</th>
+                            <th scope="col" style="width: 40%">Shortened link</th>
+                            <th scope="col" style="width: 60%">Original link</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -70,6 +73,8 @@
 
 <script setup>
     import { ref, onMounted } from 'vue';
+
+    import QrcodeVue from 'qrcode.vue';
 
     const originalUrl = ref('');
     const shortUrl = ref('');
@@ -101,7 +106,7 @@
                 body: JSON.stringify({ url: originalUrl.value })
             });
 
-            if (!response.ok) throw new Error('Không thể rút gọn link. Vui lòng kiểm tra lại!');
+            if (!response.ok) throw new Error('Unable to shorten the link. Please check again!');
 
             const data = await response.json();
             shortUrl.value = data.shortUrl;
