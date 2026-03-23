@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using UrlShortener.Services;
 using UrlShortener.Data;
+using System.Linq;
 
 namespace UrlShortener.API.Controllers
 {
@@ -20,7 +21,6 @@ namespace UrlShortener.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // Lấy 10 link rút gọn mới nhất
             var history = await _context.UrlMappings
                                         .OrderByDescending(u => u.CreatedAt)
                                         .Take(10)
@@ -51,12 +51,10 @@ namespace UrlShortener.API.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteAll()
         {
-            // Lấy toàn bộ dữ liệu trong bảng
             var allLinks = await _context.UrlMappings.ToListAsync();
 
             if (allLinks.Any())
             {
-                // Xóa sạch sẽ một lần
                 _context.UrlMappings.RemoveRange(allLinks);
                 await _context.SaveChangesAsync();
 
@@ -64,6 +62,28 @@ namespace UrlShortener.API.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        // MOST IMPORTANT FUNCTION: REFERRING SHORTENED LINKS
+        [HttpGet("/{shortCode}")]
+        public async Task<IActionResult> RedirectToOriginal(string shortCode)
+        {
+            if (string.IsNullOrEmpty(shortCode)) return RedirectToAction("Index");
+
+            var link = await _context.UrlMappings.FirstOrDefaultAsync(u => u.ShortCode == shortCode);
+
+            if (link == null)
+            {
+                TempData["Error"] = "Oops! The short link does not exist or has been deleted.";
+                return RedirectToAction("Index");
+            }
+
+            // Increase the number of clicks by 1
+            link.AccessCount += 1;
+            await _context.SaveChangesAsync();
+
+            // Redirect
+            return Redirect(link.OriginalUrl);
         }
     }
 }

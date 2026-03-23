@@ -40,10 +40,10 @@ namespace UrlShortener.Services
             _context.UrlMappings.Add(urlMapping);
             await _context.SaveChangesAsync();
 
-            // LƯU Ý MERIT: Lưu luôn vào Cache ngay khi vừa tạo xong để lần click đầu tiên siêu nhanh
+            //Save to cache immediately after creation for super fast first click.
             await _cache.SetStringAsync(shortCode, originalUrl, new DistributedCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24) // Cho phép Cache sống trong 24 giờ
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24) // Allow the cache to live for 24 hours.
             });
 
             return shortCode;
@@ -51,15 +51,15 @@ namespace UrlShortener.Services
 
         public async Task<string> GetOriginalUrlAsync(string shortCode)
         {
-            // 1. TÌM TRONG CACHE TRƯỚC
+            //LOOK IN THE CACHE FIRST
             var cachedUrl = await _cache.GetStringAsync(shortCode);
             if (!string.IsNullOrEmpty(cachedUrl))
             {
-                // Nếu thấy trong Cache, trả về ngay lập tức, bỏ qua Database!
+                //If found in the cache, return it immediately, bypassing the database!
                 return cachedUrl;
             }
 
-            // 2. NẾU CACHE KHÔNG CÓ (Cache Miss), MỚI TÌM TRONG DATABASE
+            // IF THE CACHE IS MISSING (Cache Miss), THEN SEARCH IN THE DATABASE.
             var mapping = await _context.UrlMappings.FirstOrDefaultAsync(u => u.ShortCode == shortCode);
 
             if (mapping != null)
@@ -67,7 +67,7 @@ namespace UrlShortener.Services
                 mapping.AccessCount++;
                 await _context.SaveChangesAsync();
 
-                // Lấy được từ DB rồi thì lưu luôn vào Cache để lần sau lấy cho nhanh
+                // Once you've retrieved it from the database, save it to the cache so you can retrieve it quickly next time.
                 await _cache.SetStringAsync(shortCode, mapping.OriginalUrl, new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
@@ -84,11 +84,11 @@ namespace UrlShortener.Services
             var urlItem = await _context.UrlMappings.FirstOrDefaultAsync(u => u.ShortCode == shortCode);
             if (urlItem == null) return false;
 
-            // 1. Cập nhật vào Database
+            //Update the database.
             urlItem.OriginalUrl = newUrl;
             await _context.SaveChangesAsync();
 
-            // 2. [TỐI QUAN TRỌNG] Xóa Cache cũ để lần sau nó tự lấy link mới
+            //Clear the old cache so that it automatically retrieves the new link next time. // Important
             await _cache.RemoveAsync(shortCode);
 
             return true;
@@ -99,11 +99,11 @@ namespace UrlShortener.Services
             var urlItem = await _context.UrlMappings.FirstOrDefaultAsync(u => u.ShortCode == shortCode);
             if (urlItem == null) return false;
 
-            // 1. Xóa khỏi Database
+            //Remove from database
             _context.UrlMappings.Remove(urlItem);
             await _context.SaveChangesAsync();
 
-            // 2. [TỐI QUAN TRỌNG] Xóa luôn khỏi Cache để người dùng không truy cập được nữa
+            //Delete it permanently from the cache so that users can no longer access it. // important
             await _cache.RemoveAsync(shortCode);
 
             return true;

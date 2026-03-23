@@ -37,6 +37,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseStaticFiles(); //use for wwwroot
+
+app.UseRouting();
+
 // Middleware configuration
 if (app.Environment.IsDevelopment())
 {
@@ -57,6 +61,5 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.Migrate(); // Automatically run the database update command.
 }
-// --------------------------------------------------------------
 
 app.Run();

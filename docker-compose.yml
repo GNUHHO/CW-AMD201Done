@@ -8,7 +8,7 @@ services:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Greenwich@123
     ports:
-      - "1433:1433"
+      - "2026:1433"
 
   # 2. Redis Cache
   redis-cache:

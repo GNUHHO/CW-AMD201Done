@@ -1,108 +1,76 @@
-\# High-Performance URL Shortener
+﻿# T-Shortener | High-Performance URL Shortener
 
+T-Shortener is a modern, fast, and robust URL shortening service built with **ASP.NET Core MVC** and **Web API**. It provides both a user-friendly web interface with glassmorphism design and a fully documented RESTful API for developers. The entire system is containerized using **Docker** for seamless deployment.
 
+---
 
-!\[.NET 10](https://img.shields.io/badge/.NET%2010-5C2D91?style=for-the-badge\&logo=.net\&logoColor=white)
+## Key Features
 
-!\[Vue.js](https://img.shields.io/badge/Vue.js%203-%2335495e.svg?style=for-the-badge\&logo=vuedotjs\&logoColor=%234FC08D)
+* **Blazing Fast Redirection:** Instantly redirects users from a short code to the original long URL.
+* **Modern UI/UX:** Responsive web interface built with Bootstrap 5, featuring a clean, glassmorphism-inspired aesthetic.
+* **Auto QR Code Generation:** Automatically generates downloadable QR codes for every shortened URL using `qrcode.js`.
+* **History Management:** View recent shortened links and easily clear the entire history with a single click.
+* **Full REST API:** Includes a complete CRUD API for programmatic access, documented interactively with Swagger UI.
+* **Docker Ready:** Fully containerized backend and database (SQL Server) using `docker-compose` for a "zero-config" setup.
 
-!\[Redis](https://img.shields.io/badge/Redis-%23DD0031.svg?style=for-the-badge\&logo=redis\&logoColor=white)
+---
 
-!\[SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=for-the-badge\&logo=microsoft%20sql%20server\&logoColor=white)
+## Tech Stack
 
-!\[Docker](https://img.shields.io/badge/Docker-%230db7ed.svg?style=for-the-badge\&logo=docker\&logoColor=white)
+### Backend
+* **Framework:** .NET (ASP.NET Core MVC & Web API)
+* **Database:** Microsoft SQL Server 2022
+* **ORM:** Entity Framework Core
+* **Documentation:** Swashbuckle (Swagger)
 
+### Frontend
+* **Design:** HTML5, CSS3 (Custom Glassmorphism)
+* **Framework:** Bootstrap 5
+* **Libraries:** QRCode.js
 
+### DevOps & Architecture
+* **Containerization:** Docker & Docker Compose
+* **Pattern:** MVC (Model-View-Controller) & Repository Pattern
 
-A modern, full-stack web application designed to convert long, complex URLs into short, manageable links. This project focuses heavily on \*\*high-performance data retrieval\*\* by implementing a Distributed Cache architecture and is fully containerized for a seamless "1-click" deployment.
+---
 
+## Getting Started
 
+Follow these instructions to get a copy of the project up and running on your local machine.
 
-\---
+### Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+* *(Optional)* .NET SDK if you want to run it outside of Docker.
 
+### Installation & Running
 
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/your-username/T-Shortener.git](https://github.com/your-username/T-Shortener.git)
+    cd T-Shortener
+    ```
 
-\##  Key Features
+2.  **Build and spin up the containers:**
+    ```bash
+    docker-compose up -d --build
+    ```
 
+3.  **Access the application:**
+    * **Web Interface:** Open your browser and navigate to `http://localhost:5078`
+    * **API Documentation (Swagger):** Navigate to `http://localhost:5078/swagger`
+    * **Database Access (SSMS):** Connect to `127.0.0.1,1435` with User `sa` and your configured password.
 
+---
 
-\* \*\* Blazing Fast Redirects with Redis:\*\* Implements the \*Cache-Aside\* pattern to maximize redirect speed (HTTP 302), reducing database query loads by up to 90%.
+## Project Structure
 
-\* \*\* Smart Cache Invalidation:\*\* The system automatically evicts stale cache data during `PUT` (Update) and `DELETE` operations, guaranteeing absolute Data Consistency.
-
-\* \*\* Client-Side QR Code Generation:\*\* QR codes for original URLs are rendered dynamically on the browser via Vue.js, offloading image processing from the backend server.
-
-\* \*\* Clean Architecture:\*\* The C# Backend strictly adheres to the `Service Pattern` and `Dependency Injection`, completely decoupling the API Controllers from the Data Access Layer.
-
-\* \*\* Seamless Deployment:\*\* The Frontend, Backend API, Database, and Redis cache are fully Dockerized and connected via a private Docker network. No local SDKs required!
-
-
-
-\---
-
-
-
-\## Tech Stack
-
-
-
-| Component | Technology |
-
-| :--- | :--- |
-
-| \*\*Frontend\*\* | Vue.js 3, Vite, Bootstrap 5, `qrcode.vue` |
-
-| \*\*Backend API\*\* | ASP.NET Core 10.0 Web API, Entity Framework Core 10 |
-
-| \*\*Database\*\* | Microsoft SQL Server (Containerized) |
-
-| \*\*Caching Layer\*\*| Redis (Alpine Image) |
-
-| \*\*DevOps\*\* | Docker, Docker Compose |
-
-
-
-\---
-
-
-
-\## System Architecture \& Data Flow
-
-
-
-1\. \*\*Redirect Flow (GET `/{code}`):\*\* Client -> `API Controller` -> Check `Redis Cache`.
-
-&#x20;  \* \*\*Cache Hit:\*\* Immediately return the cached Original URL -> Redirect (302).
-
-&#x20;  \* \*\*Cache Miss:\*\* Query `SQL Server` -> Store result in `Redis` (with TTL) -> Redirect (302).
-
-2\. \*\*Update/Delete Flow (PUT/DELETE):\*\*
-
-&#x20;  Update or Remove the record in `SQL Server` -> Simultaneously \*\*Delete the corresponding Key in `Redis`\*\* to prevent stale data routing.
-
-
-
-\---
-
-
-
-\## Getting Started
-
-
-
-The system is completely environment-agnostic. You \*\*DO NOT\*\* need to install Node.js, .NET SDK, or SQL Server locally. 
-
-
-
-\*\*Prerequisite:\*\* Ensure you have \[Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
-
-
-
-\### Step 1: Clone the Repository
-
-```bash
-
-git clone \[https://github.com/GNUHHO/CW-AMD201Done.git](https://github.com/GNUHHO/CW-AMD201Done.git)
-
-cd CW-AMD201Done
-
+```text
+T-Shortener/
+├── docker-compose.yml         # Docker multi-container orchestration
+└── UrlShortener.API/          # Main ASP.NET Core Application
+    ├── Controllers/           # Handles Web (Home) and API routing
+    ├── Data/                  # Entity Framework DbContext & Migrations
+    ├── Services/              # Core business logic (URL generation)
+    ├── Views/                 # Razor pages for the UI
+    ├── wwwroot/               # Static files (CSS, JS, Images)
+    └── Program.cs             # App configuration & middleware pipeline

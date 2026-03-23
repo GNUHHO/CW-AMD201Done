@@ -1,0 +1,37 @@
+﻿/* T-Shortener Custom Styles */
+
+body {
+    background-color: #f8f9fa;
+}
+
+/* Purple Gradient Header */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    border-radius: 0 0 2rem 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Glassmorphism effect for Cards */
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: none;
+}
+
+/* Effect when hovering over a row in the table */
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+    transition: 0.3s;
+}
+
+/* Shorten the original link if it's too long using dots ... */
+.url-text {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}

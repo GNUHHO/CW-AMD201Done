@@ -13,16 +13,15 @@ namespace UrlShortener.API.Controllers
         private readonly IUrlService _urlService;
         private readonly ApplicationDbContext _context;
 
-        // Tiêm cả Service (để tạo link) và DbContext (để lấy/sửa/xóa)
+        // Inject both Service to create links
+        // DbContext (to retrieve/edit/delete)
         public UrlApiController(IUrlService urlService, ApplicationDbContext context)
         {
             _urlService = urlService;
             _context = context;
         }
 
-        // ==========================================
-        // 1. C - CREATE: Tạo link rút gọn mới
-        // ==========================================
+        // 1.CREATE
         [HttpPost("shorten")]
         public async Task<IActionResult> Create([FromBody] string originalUrl)
         {
@@ -43,9 +42,7 @@ namespace UrlShortener.API.Controllers
             });
         }
 
-        // ==========================================
-        // 2. R - READ: Lấy danh sách TOÀN BỘ link
-        // ==========================================
+        // READ
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -55,9 +52,8 @@ namespace UrlShortener.API.Controllers
             return Ok(links);
         }
 
-        // ==========================================
-        // 3. R - READ: Lấy thông tin 1 link theo ShortCode
-        // ==========================================
+        // READ: Get information from a link using a Shortcode
+
         [HttpGet("{shortCode}")]
         public async Task<IActionResult> GetByCode(string shortCode)
         {
@@ -68,28 +64,24 @@ namespace UrlShortener.API.Controllers
             return Ok(link);
         }
 
-        // ==========================================
-        // 4. U - UPDATE: Sửa đường link gốc
-        // ==========================================
+        // UPDATE
         [HttpPut("{shortCode}")]
         public async Task<IActionResult> Update(string shortCode, [FromBody] string newOriginalUrl)
         {
             if (string.IsNullOrWhiteSpace(newOriginalUrl)) return BadRequest(new { message = "Invalid new URL" });
 
-            // Tìm link trong Database
+            // Find the link in the database.
             var link = await _context.UrlMappings.FirstOrDefaultAsync(x => x.ShortCode == shortCode);
             if (link == null) return NotFound(new { message = "Short code not found!" });
 
-            // Cập nhật link mới
+            // Update the new link.
             link.OriginalUrl = newOriginalUrl;
             await _context.SaveChangesAsync();
 
             return Ok(new { Message = "Updated successfully", Data = link });
         }
 
-        // ==========================================
-        // 5. D - DELETE: Xóa 1 link cụ thể
-        // ==========================================
+        //DELETE
         [HttpDelete("{shortCode}")]
         public async Task<IActionResult> Delete(string shortCode)
         {

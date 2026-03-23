@@ -13,7 +13,7 @@ namespace UrlShortener.UnitTests
 {
     public class UrlServiceTests
     {
-        // Hàm này giúp tạo ra một Database "ảo" trên RAM, sạch sẽ cho mỗi lần chạy Test
+        //creates a clean, "virtual" database in RAM for each test run.
         private DbContextOptions<ApplicationDbContext> CreateNewContextOptions()
         {
             return new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -24,23 +24,23 @@ namespace UrlShortener.UnitTests
         [Fact]
         public async Task ShortenUrlAsync_ShouldSaveToDbAndCache_ReturnsShortCode()
         {
-            // 1. Arrange (Chuẩn bị dữ liệu và môi trường)
+            // 1. Arrange Prepare data and environment
             var options = CreateNewContextOptions();
-            var mockCache = new Mock<IDistributedCache>(); // Tạo một Redis giả
+            var mockCache = new Mock<IDistributedCache>(); // Create a fake Redis
             var originalUrl = "https://greenwich.edu.vn";
 
             using (var context = new ApplicationDbContext(options))
             {
                 var service = new UrlService(context, mockCache.Object);
 
-                // 2. Act (Hành động: Gọi hàm cần test)
+                // Action: Calling the function to be tested
                 var shortCode = await service.ShortenUrlAsync(originalUrl);
 
-                // 3. Assert (Kiểm tra kết quả)
+                // 3. Assert (Check results)
                 Assert.NotNull(shortCode);
-                Assert.Equal(7, shortCode.Length); // Mã rút gọn phải đúng 7 ký tự
+                Assert.Equal(7, shortCode.Length); // The shortened code must be exactly 7 characters long.
 
-                // Kiểm tra xem đã lưu vào Database chưa
+                // Check if it has been saved to the database
                 var dbEntry = await context.UrlMappings.FirstOrDefaultAsync(u => u.ShortCode == shortCode);
                 Assert.NotNull(dbEntry);
                 Assert.Equal(originalUrl, dbEntry.OriginalUrl);
@@ -56,7 +56,7 @@ namespace UrlShortener.UnitTests
             var shortCode = "ABCDEFG";
             var cachedOriginalUrl = "https://cached-url.com";
 
-            // Ép cái Redis giả trả về dữ liệu ngay lập tức (Mô phỏng Cache Hit)
+            // Force the fake Redis to return data immediately (Simulate Cache Hit)
             var encodedUrl = Encoding.UTF8.GetBytes(cachedOriginalUrl);
             mockCache.Setup(c => c.GetAsync(shortCode, default))
                      .ReturnsAsync(encodedUrl);
@@ -70,7 +70,7 @@ namespace UrlShortener.UnitTests
 
                 // 3. Assert
                 Assert.Equal(cachedOriginalUrl, result);
-                // Vì Database ảo đang trống trơn, nếu nó trả về đúng link thì 100% là nó đã lấy từ Cache!
+                // Since the virtual database is empty, if it returns the correct link, it's 100% certain it retrieved the data from the cache
             }
         }
     }
