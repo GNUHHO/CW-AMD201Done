@@ -1,7 +1,7 @@
 ﻿version: '3.8'
 
 services:
-  # 1. Cơ sở dữ liệu SQL Server
+  # 1. SQL Server database
   sql-db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
@@ -10,7 +10,7 @@ services:
     ports:
       - "1433:1433"
 
-  # 2. Bộ nhớ đệm Redis
+  # 2. Redis Cache
   redis-cache:
     image: redis:alpine
     ports:
@@ -22,22 +22,14 @@ services:
       context: .
       dockerfile: UrlShortener.API/Dockerfile
     ports:
-      - "5078:8080" # Ánh xạ cổng ra ngoài
+      - "5078:8080" # Outbound gate mapping
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      # Ghi đè chuỗi kết nối để trỏ vào thằng sql-db và redis-cache ở trên
+      # Override the connection string to point to the sql-db and redis-cache above.
       - ConnectionStrings__DefaultConnection=Server=sql-db;Database=UrlShortenerDb;User Id=sa;Password=Greenwich@123;TrustServerCertificate=True;
       - ConnectionStrings__Redis=redis-cache:6379
     depends_on:
       - sql-db
       - redis-cache
 
-  # 4. Frontend Web (Vue.js)
-  frontend-web:
-    build: 
-      context: ./url-shortener-web
-      dockerfile: Dockerfile
-    ports:
-      - "5173:80" # Bạn của bạn sẽ truy cập qua cổng này
-    depends_on:
-      - backend-api
+ 

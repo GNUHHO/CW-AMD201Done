@@ -10,11 +10,11 @@ namespace UrlShortener.Services
     public class UrlService : IUrlService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IDistributedCache _cache; // Biến dùng để gọi Redis
+        private readonly IDistributedCache _cache; // call Redis
         private const string Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         private readonly Random _random = new Random();
 
-        // Tiêm Cache vào qua Constructor
+        // Inject cache via constructor
         public UrlService(ApplicationDbContext context, IDistributedCache cache)
         {
             _context = context;

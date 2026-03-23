@@ -13,7 +13,7 @@ namespace UrlShortener.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Tạo Unique Index cho ShortCode để tăng tốc độ truy vấn khi user truy cập link rút gọn
+            // Create a unique index for the shortcode to speed up queries when users access the shortened link.
             modelBuilder.Entity<UrlMapping>()
                 .HasIndex(u => u.ShortCode)
                 .IsUnique();

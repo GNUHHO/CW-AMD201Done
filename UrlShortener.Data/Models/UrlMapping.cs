@@ -17,7 +17,6 @@ namespace UrlShortener.Data.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Lưu lại số lượt click để làm tính năng thống kê (metadata)
         public int AccessCount { get; set; } = 0;
     }
 }

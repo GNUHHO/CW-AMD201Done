@@ -1,12 +1,12 @@
-﻿# Bỏ qua các thư mục rác của .NET
+﻿# BIgnore .NET junk directories
 bin/
 obj/
 
-# Bỏ qua các file cấu hình của Visual Studio/VS Code
+# Ignore Visual Studio/VS Code configuration files.
 .vs/
 .vscode/
 *.user
 
-# Bỏ qua file môi trường Docker ảo
+# Ignore the virtual Docker environment file.
 .dockerignore
 Dockerfile

@@ -4,10 +4,10 @@ namespace UrlShortener.Services
 {
     public interface IUrlService
     {
-        // Nhận vào URL gốc và trả về mã ngắn (Short Code)
+        // Receives the original URL and returns a shortcode
         Task<string> ShortenUrlAsync(string originalUrl);
 
-        // Nhận vào mã ngắn và trả về URL gốc để chuyển hướng
+        // Receive the shortcode and return the original URL for redirection
         Task<string> GetOriginalUrlAsync(string shortCode);
         Task<bool> UpdateUrlAsync(string shortCode, string newUrl);
         Task<bool> DeleteUrlAsync(string shortCode);
